@@ -14,11 +14,26 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('email')->unique();
+            $table->bigIncrements('id');
+            $table->string('username')->unique();
             $table->string('password');
-            $table->rememberToken();
+            $table->string('first_name');
+            $table->string('last_name')->nullable();
+            $table->string('nick_name')->nullable();
+            $table->string('email')->unique()->nullable();
+            $table->bigInteger('fb_id')->unique()->nullable();
+            $table->bigInteger('google_id')->unique()->nullable();
+            $table->bigInteger('mob_no')->unique()->nullable();
+            $table->string('profile_pic')->nullable();
+            $table->string('website')->nullable();
+            $table->string('fb_url')->nullable();
+            $table->string('linkedin_url')->nullable();
+            $table->string('twitter_url')->nullable();
+            $table->string('instagram_url')->nullable();
+            $table->string('google_plus_url')->nullable();
+            $table->string('activation_token')->nullable();
+            $table->boolean('is_active')->default('0')->comment("0 - Inactive, 1 - Active");
+            $table->boolean('is_delete')->default('0')->comment("0 - Live, 1 - Delete");
             $table->timestamps();
         });
     }

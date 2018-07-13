@@ -24,7 +24,7 @@ class authJWT
                     'success' => False,
                     'code' => 1001,
                     'error' => [
-                        'message' => 'Token is Expired',
+                        'message' => config('data.token.expire'),
                     ]
                 ]);
             } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
@@ -32,7 +32,7 @@ class authJWT
                     'success' => False,
                     'code' => 1001,
                     'error' => [
-                        'message' => 'Token is Invalid',
+                        'message' => config('data.token.invalid'),
                     ]
                 ]);
             } else if($e instanceof \Tymon\JWTAuth\Exceptions\JWTException){
@@ -40,7 +40,7 @@ class authJWT
                     'success' => False,
                     'code' => 1001,
                     'error' => [
-                        'message' => 'Token Not Respond',
+                        'message' => config('data.token.respond'),
                     ]
                 ]);
             } else{
@@ -48,7 +48,7 @@ class authJWT
                     'success' => False,
                     'code' => 1001,
                     'error' => [
-                        'message' => 'Token is Required',
+                        'message' => config('data.token.required'),
                     ]
                 ]);
             }

@@ -202,8 +202,11 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'code' => 1104,
-                'message' => config('data.message.reset_mail_error')
+                'error' => [
+                    'message' => config('data.message.reset_mail_error')
+                ]
             ]);
+
         }
 
         return response()->json([

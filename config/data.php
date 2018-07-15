@@ -13,7 +13,9 @@ return [
         'reset_mail_error' => 'Reset Password Link Not Sent',
         'change_pass_success' => 'Password Change Successfully',
         'current_pass_error' => 'Current Password Not Match',
-        'logout' => 'Logout_successfully'
+        'logout' => 'Logout_successfully',
+        'user_not_find' => 'User Not Found',
+        'update_success' => 'Update Successfully',
     ],
 
     //Token
@@ -25,6 +27,11 @@ return [
         'generate' => 'Token Not Generate',
         'activate_required' => 'Activation Token is Required',
         'activate_expire' => 'Activation Token is Expired',
+    ],
+
+    'url' => [
+        'activation' => 'http://localhost:8000/api/activate_account/',
+        'reset_password' => 'http://localhost:8000/api/reset_password/',
     ]
 
 

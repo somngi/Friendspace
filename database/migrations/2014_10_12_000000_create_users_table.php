@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('last_name')->nullable();
             $table->string('nick_name')->nullable();
             $table->tinyInteger('gender')->comment('1 - Male, 2 - Female, 3 - Others');
-            $table->date('dob')->nullable();
+            $table->dateTime('dob')->nullable();
             $table->bigInteger('fb_id')->unique()->nullable();
             $table->bigInteger('google_id')->unique()->nullable();
             $table->bigInteger('mob_no')->unique()->nullable();

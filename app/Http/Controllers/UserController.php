@@ -11,16 +11,32 @@ use JWTAuth;
 class UserController extends Controller
 {
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function userProfile(Request $request)
     {
-        $this->user = JWTAuth::parseToken()->toUser($request->token);
-        return response()->json($this->user);
+        $auth_user = JWTAuth::parseToken()->toUser($request->token);
+        $user = new User();
+        $followers = $user->countFollowers($auth_user);
+        $following = $user->countFollowing($auth_user);
+        $userData = User::find($auth_user->id);
+        return response()->json([
+            'user' => $userData,
+            'followers' => $followers,
+            'following' => $following
+        ]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateProfile(Request $request){
-        $user = JWTAuth::parseToken()->toUser($request->token);
+        $user_id = JWTAuth::parseToken()->toUser($request->token)->id;
         $validator = Validator::make($request->all(),[
-            'mob_no' => 'min:8|max:13|regex:/^\+?\d+$/|unique:users,mob_no,'.$user->id,
+            'mob_no' => 'min:8|max:13|regex:/^\+?\d+$/|unique:users,mob_no,'.$user_id,
             'dob' => 'date_format:d/m/Y',
             'website' => 'url',
             'fb_url' => 'url',
@@ -37,7 +53,7 @@ class UserController extends Controller
                 'error' => $validator->errors()
             ]);
         }
-
+        $user = User::find($user_id);
         $user->first_name = $request->input('first_name');
         $user->last_name = $request->input('last_name');
         $user->nick_name = $request->input('nick_name');
@@ -60,6 +76,10 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * @param $username
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function userDataByUsername($username)
     {
         $userData = User::where('username', $username)
@@ -96,6 +116,9 @@ class UserController extends Controller
 
     }
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getUsersList()
     {
         $usersList = User::where('is_active', 1)
@@ -110,6 +133,10 @@ class UserController extends Controller
 
     }
 
+    /**
+     * @param $query
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function searchUsers($query){
         $query = str_replace('+',' ',$query);
         $searchData = User::where('username','LIKE','%'.$query.'%')

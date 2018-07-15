@@ -8,4 +8,9 @@ class Follow extends Model
 {
     //
     protected $table = 'follow';
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+
 }

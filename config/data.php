@@ -16,6 +16,11 @@ return [
         'logout' => 'Logout_successfully',
         'user_not_find' => 'User Not Found',
         'update_success' => 'Update Successfully',
+        'follow_exists' => 'You Already Follow this User',
+        'follow_not_exists' => 'You have not Follow this User',
+        'follow_success' => 'Follow Success',
+        'unfollow_success' => 'UnFollow Success',
+        'follow_error' => 'Follow Error',
     ],
 
     //Token

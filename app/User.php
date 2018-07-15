@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Namshi\JOSE\JWT;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -51,5 +52,25 @@ class User extends Authenticatable implements JWTSubject
     {
         // TODO: Implement getJWTCustomClaims() method.
         return [];
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class,'follow','following_id','follower_id')->withTimestamps();
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class,'follow','follower_id','following_id')->withTimestamps();
+    }
+
+    public function countFollowers($user){
+        $followers = $user->followers->count();
+        return $followers;
+    }
+
+    public function countFollowing($user){
+        $following = $user->following->count();
+        return $following;
     }
 }

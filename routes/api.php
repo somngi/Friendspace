@@ -34,10 +34,10 @@ Route::middleware('JWTAuth')->group(function (){
 
 
     //follow and Unfollow
-    Route::POST('follow','UserController@follow');
-    Route::POST('un_follow','UserController@follow');
-    Route::GET('followers/{$id}','UserController@getFollowers');
-    Route::GET('following/{$id}','UserController@getFollowing');
+    Route::PUT('user/{id}/follow','FollowController@follow');
+    Route::DELETE('user/{id}/follow','FollowController@unFollow');
+    Route::GET('followers/{id}','FollowController@getFollowers');
+    Route::GET('following/{id}','FollowController@getFollowing');
 });
 
 //User Without Auth

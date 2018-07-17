@@ -17,9 +17,8 @@ class CreateUserPhotosTable extends Migration
             $table->increments('id');
             $table->bigInteger('user_id')->unsigned();
             $table->integer('album_id')->unsigned();
-            $table->string('img');
-            $table->string('img_caption')->nullable();
-            $table->boolean('is_delete')->default('0')->comment("0 - Live, 1 - Delete");
+            $table->string('photo');
+            $table->string('photo_caption')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('album_id')->references('id')->on('user_photo_album');

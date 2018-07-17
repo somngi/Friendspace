@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Album;
+use App\Photo;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
 use JWTAuth;
 
 class UserController extends Controller
@@ -73,6 +77,77 @@ class UserController extends Controller
             'code' => '1101',
             'message' => config('data.message.update_success')
 
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uploadProfilePic(Request $request){
+        $user = JWTAuth::parseToken()->toUser($request->bearerToken());
+        $validator = Validator::make($request->all(),[
+            'profile_pic' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        if ($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'code' => 1002,
+                'error' => $validator->errors()
+            ]);
+        }
+
+        $s3 = Storage::disk('s3');
+
+        $album = Album::where('album_name','Profile Picture')
+            ->where('user_id',$user->id)
+            ->first();
+
+        if (!$album){
+            $s3->makeDirectory($user->id.'/profile_picture');
+            $album = new Album();
+            $album->album_name = 'Profile Picture';
+            $album->album_dir = 'profile_picture';
+            $album->album_caption = 'Album for Profile Pictures';
+            $album = $user->album()->save($album);
+        }
+
+        $profile_pic = $request->file('profile_pic');
+        $extension = $profile_pic->getClientOriginalExtension();
+        $profile_pic_name = str_random(16).'_'.$user->id.'_'.time().'.'.$extension;
+        $dir = $user->id.'/profile_picture';
+
+        $s3->put($dir.'/original/'.$profile_pic_name,file_get_contents($profile_pic),'public');
+        $profile_pic_icon = Image::make($profile_pic)->resize(null,config('data.image.profile_pic_icon_height'),function ($contstraint){
+            $contstraint->aspectRatio();
+        })->crop(config('data.image.profile_pic_icon_width'),config('data.image.profile_pic_icon_height'))->encode($extension);
+        $s3->put($dir.'/icon/'.$profile_pic_name,(string) $profile_pic_icon,'public');
+
+        $profile_pic_thumb = Image::make($profile_pic)->resize(null,config('data.image.profile_pic_thumb_height'),function ($contstraint) {
+            $contstraint->aspectRatio();
+        })->crop(config('data.image.profile_pic_thumb_width'),config('data.image.profile_pic_thumb_height'))->encode($extension);
+        $s3->put($dir.'/thumb/'.$profile_pic_name,(string) $profile_pic_thumb,'public');
+        $url = $s3->url($dir);
+
+        $user->profile_pic = $profile_pic_name;
+        $user->save();
+
+        $photo = new Photo();
+        $photo->user_id = $user->id;
+        $photo->album_id = $album->id;
+        $photo->photo = $profile_pic_name;
+        $photo->save();
+
+        return response()->json([
+            'success' => true,
+            'code' => 1101,
+            'data' => [
+                'profile_pic' => $profile_pic_name,
+                'profile_pic_icon_url' => $url.'/icon/'.$profile_pic_name,
+                'profile_pic_thumb_url' => $url.'/thumb/'.$profile_pic_name,
+                'profile_pic_original_url' => $url.'/original/'.$profile_pic_name,
+            ]
         ]);
     }
 

@@ -17,9 +17,8 @@ class CreateUserPhotoAlbumTable extends Migration
             $table->increments('id');
             $table->bigInteger('user_id')->unsigned();
             $table->string('album_name');
+            $table->string('album_dir');
             $table->string('album_caption')->nullable();
-            $table->boolean('is_delete')->default('0')->comment("0 - Live, 1 - Delete");
-
             $table->foreign('user_id')->references('id')->on('users');
 
             $table->timestamps();

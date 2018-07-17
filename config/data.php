@@ -21,6 +21,9 @@ return [
         'follow_success' => 'Follow Success',
         'unfollow_success' => 'UnFollow Success',
         'follow_error' => 'Follow Error',
+        'album_exists' => 'Album Already Exists',
+        'album_error' => 'Album Not Created',
+        'album_success' => 'Album Successfully Created',
     ],
 
     //Token
@@ -37,7 +40,29 @@ return [
     'url' => [
         'activation' => 'http://localhost:8000/api/activate_account/',
         'reset_password' => 'http://localhost:8000/api/reset_password/',
+    ],
+
+    'image' => [
+        'profile_pic_icon_width' => 50,
+        'profile_pic_icon_height' => 50,
+        'profile_pic_thumb_width' => 250,
+        'profile_pic_thumb_height' => 250,
+        'album_photo_thumb_width' => 250,
+        'album_photo_thumb_height' => 250,
+        'post_image_thumb_width' => 250,
+        'post_image_thumb_height' => 250,
+    ],
+
+    'path' => [
+        'album' => '{user_id}/{album_name}_{user_id}_str_random(16)/(thumb|main)',
+        'album_profile_picture' => '{user_id}/profile_picture/(icon|thumb|main)' ,
+        'album_posts' => '{user_id}/posts/(thumb|main',
+        'profile_picture' => 'str_random(16)_{user_id}_time().ext',
+        'photo' => 'str_random(16)_{album_id}_time().ext',
+        'posts_image' => 'str_random(16)_{user_id|album_id|post_id}_time().ext',
     ]
+
+
 
 
 

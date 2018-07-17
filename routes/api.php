@@ -31,6 +31,7 @@ Route::middleware('JWTAuth')->group(function (){
     Route::POST('update_profile','UserController@updateProfile');
     Route::GET('users_list','UserController@getUsersList');
     Route::GET('users/q={query}','UserController@searchUsers');
+    Route::POST('profile_pic','UserController@uploadProfilePic');
 
 
     //follow and Unfollow
@@ -38,6 +39,13 @@ Route::middleware('JWTAuth')->group(function (){
     Route::DELETE('user/{id}/follow','FollowController@unFollow');
     Route::GET('followers/{id}','FollowController@getFollowers');
     Route::GET('following/{id}','FollowController@getFollowing');
+
+    //Album
+    Route::GET('album','AlbumController@getAlbums');
+    Route::POST('album','AlbumController@createAlbum');
+    Route::PUT('album/{id}','AlbumController@editAlbum');
+    Route::DELETE('album/{id}','AlbumController@deleteAlbum');
+
 });
 
 //User Without Auth

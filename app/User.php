@@ -73,4 +73,9 @@ class User extends Authenticatable implements JWTSubject
         $following = $user->following->count();
         return $following;
     }
+
+    public function album()
+    {
+        return $this->hasMany(Album::class,'user_id');
+    }
 }

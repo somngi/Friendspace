@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
@@ -66,6 +67,39 @@ class AlbumController extends Controller
     }
 
     public function editAlbum(Request $request,$id){
+        $validator = Validator::make($request->all(),[
+            'album_name' => 'required|max:20|min:2'
+        ]);
+
+        if ($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'code' => 1002,
+                'error' => $validator->errors()
+            ]);
+        }
+
+        $album = Album::find($id);
+        if (!$album){
+            return response()->json([
+                'success' => false,
+                'code' => 1002,
+                'error' => [
+                    'message' => config('data.message.album_not_exists')
+                ]
+            ]);
+        }
+
+        $album->album_name = $request->input('album_name');
+        $album->album_caption = $request->input('album_caption');
+        $album->save();
+
+        return response()->json([
+            'success' => false,
+            'code' => 1002,
+            'message' => config('data.message.album_edit_success')
+        ]);
+
 
     }
 

@@ -24,6 +24,8 @@ return [
         'album_exists' => 'Album Already Exists',
         'album_error' => 'Album Not Created',
         'album_success' => 'Album Successfully Created',
+        'album_not_exists' => 'Album Not Exists',
+        'album_edit_success' =>'Album Edit Successfully',
     ],
 
     //Token

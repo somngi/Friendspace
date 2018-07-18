@@ -43,8 +43,10 @@ Route::middleware('JWTAuth')->group(function (){
     //Album
     Route::GET('album','AlbumController@getAlbums');
     Route::POST('album','AlbumController@createAlbum');
-    Route::PUT('album/{id}','AlbumController@editAlbum');
+    Route::POST('album/{id}','AlbumController@editAlbum');
     Route::DELETE('album/{id}','AlbumController@deleteAlbum');
+
+    //Photo
 
 });
 

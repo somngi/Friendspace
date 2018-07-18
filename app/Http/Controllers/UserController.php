@@ -139,6 +139,9 @@ class UserController extends Controller
         $photo->photo = $profile_pic_name;
         $photo->save();
 
+        $album->album_cover = $profile_pic_name;
+        $album->save();
+
         return response()->json([
             'success' => true,
             'code' => 1101,

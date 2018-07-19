@@ -74,8 +74,11 @@ class User extends Authenticatable implements JWTSubject
         return $following;
     }
 
-    public function album()
-    {
+    public function album(){
         return $this->hasMany(Album::class,'user_id');
+    }
+
+    public function photos(){
+        return $this->hasMany(Photo::class,'user_id');
     }
 }

@@ -11,7 +11,7 @@ class FollowController extends Controller
 {
     //
     public function follow(Request $request,$id){
-        $follower = JWTAuth::parseToken()->toUser($request->token);
+        $follower = JWTAuth::parseToken()->toUser($request->bearerToken());
         $following = User::find($id);
         if (!$following){
             return response()->json([
@@ -56,7 +56,7 @@ class FollowController extends Controller
     }
 
     public function unFollow(Request $request,$id){
-        $follower = JWTAuth::parseToken()->toUser($request->token);
+        $follower = JWTAuth::parseToken()->toUser($request->bearerToken());
         $following = User::find($id);
         if (!$following){
             return response()->json([

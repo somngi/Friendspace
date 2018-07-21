@@ -35,10 +35,20 @@ Route::middleware('JWTAuth')->group(function (){
 
 
     //follow and Unfollow
-    Route::PUT('user/{id}/follow','FollowController@follow');
-    Route::DELETE('user/{id}/follow','FollowController@unFollow');
+    Route::PUT('follow/{id}','FollowController@follow');
+    Route::DELETE('follow/{id}','FollowController@unFollow');
     Route::GET('followers/{id}','FollowController@getFollowers');
     Route::GET('following/{id}','FollowController@getFollowing');
+
+    //Friend
+    Route::PUT('friend/{id}/send','FriendController@sendRequest');
+    Route::PUT('friend/{id}/accept','FriendController@acceptRequest');
+    Route::PUT('friend/{id}/delete','FriendController@deleteRequest');
+    Route::PUT('friend/{id}/block','FriendController@blockFriend');
+
+    Route::get('friend_request','FriendController@getFriendRequest');
+    Route::get('friend','FriendController@getFriendList');
+    Route::get('block_users','FriendController@getBlockUsers');
 
     //Album
     Route::GET('album','AlbumController@getAlbums');

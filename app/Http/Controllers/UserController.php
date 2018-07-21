@@ -21,7 +21,7 @@ class UserController extends Controller
      */
     public function userProfile(Request $request)
     {
-        $auth_user = JWTAuth::parseToken()->toUser($request->token);
+        $auth_user = JWTAuth::parseToken()->toUser($request->bearerToken());
         $user = new User();
         $followers = $user->countFollowers($auth_user);
         $following = $user->countFollowing($auth_user);
@@ -38,7 +38,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateProfile(Request $request){
-        $user_id = JWTAuth::parseToken()->toUser($request->token)->id;
+        $user_id = JWTAuth::parseToken()->toUser($request->bearerToken())->id;
         $validator = Validator::make($request->all(),[
             'mob_no' => 'min:8|max:13|regex:/^\+?\d+$/|unique:users,mob_no,'.$user_id,
             'dob' => 'date_format:d/m/Y',

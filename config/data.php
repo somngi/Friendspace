@@ -26,6 +26,11 @@ return [
         'album_success' => 'Album Successfully Created',
         'album_not_exists' => 'Album Not Exists',
         'album_edit_success' =>'Album Edit Successfully',
+        'invalid_album' => 'Invalid Album, You can\'t Upload photo in this album',
+        'photo_not_found' => 'Photo Not Found',
+        'photo_delete_error' => 'Problem to Delete Photo',
+        'photo_delete_success' => 'Photo Successfully Deleted',
+        'invalid_photo' => 'Invalid Photo, You can\' Delete this Photo'
     ],
 
     //Token

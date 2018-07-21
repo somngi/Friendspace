@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Photo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -60,7 +62,7 @@ class AlbumController extends Controller
             ]);
         }
         return response()->json([
-            'success' => false,
+            'success' => true,
             'code' => 1002,
             'message' => config('data.message.album_success')
         ]);
@@ -95,7 +97,7 @@ class AlbumController extends Controller
         $album->save();
 
         return response()->json([
-            'success' => false,
+            'success' => true,
             'code' => 1002,
             'message' => config('data.message.album_edit_success')
         ]);
@@ -103,7 +105,37 @@ class AlbumController extends Controller
 
     }
 
-    public function deleteAlbum($id){
+    public function deleteAlbum(Request $request,$id){
+        $user = JWTAuth::parseToken()->toUser($request->bearerToken());
+        $album = Album::find($id);
+        if (!$album){
+            return response()->json([
+                'success' => false,
+                'code' => 1101,
+                'message' => 'album_not_found'
+            ]);
+        }
+        if ($album->user_id !== $user->id){
+            return response()->json([
+                'success' => false,
+                'code' => 1101,
+                'message' => 'invalid_album'
+            ]);
+        }
+        $photos = DB::table('user_photos')->select('id')->where('album_id',$album->id)->get();
+        foreach ($photos as $photo){
+            $photo_ids[] = $photo->id;
+        }
+        $s3 = Storage::disk('s3');
+        $s3->deleteDirectory($user->id.'/'.$album->album_dir);
+        Photo::destroy($photo_ids);
+        $album->delete();
+
+        return response()->json([
+            'success' => true,
+            'code' => 1101,
+            'message' => 'album_delete_success'
+        ]);
 
     }
 
@@ -111,7 +143,39 @@ class AlbumController extends Controller
         $user = JWTAuth::parseToken()->toUser($request->bearerToken());
         $albums = $user->album;
         return response()->json([
-           $albums
+            'success' => true,
+            'code' => 1101,
+            'data' => $albums
+        ]);
+    }
+
+    public function getAlbumPhoto(Request $request,$id){
+        $album = Album::find($id);
+        if (!$album){
+            return response()->json([
+                'success' => false,
+                'code' => 1101,
+                'message' => 'album_not_found'
+            ]);
+        }
+        $photo = $album->photos;
+        return response()->json([
+            'success' => true,
+            'code' => 1101,
+            'data' => $photo
+        ]);
+    }
+
+    public function getAllAlbumWithPhoto(Request $request){
+        $user = JWTAuth::parseToken()->toUser($request->bearerToken());
+        $albums = $user->album;
+        foreach ($albums as $album){
+            $album->photos;
+        }
+        return response()->json([
+            'success' => true,
+            'code' => 1101,
+            'data' => $albums
         ]);
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Friend;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use JWTAuth;
 
 class FriendController extends Controller
@@ -20,16 +22,26 @@ class FriendController extends Controller
                 ]
             ]);
         }
-        $friend = $user->friends()->attach($id);
-        if (!$friend){
+        $friend = Friend::where('user_id',$user->id)->where('friend_id',$id)->first();
+        if ($friend){
+            if ($friend->status == 2){
+                $friend->status = 0;
+                $friend->save();
+                return response()->json([
+                    'success' => true,
+                    'code' => 1101,
+                    'message' => 'friend_request_sent_success'
+                ]);
+            }
             return response()->json([
                 'success' => false,
                 'code' => 1102,
                 'error' => [
-                    'message' => 'friend_request_sent_error'
+                    'message' => 'request_sent_already'
                 ]
             ]);
         }
+        $user->friends()->attach($id);
         return response()->json([
             'success' => true,
             'code' => 1101,
@@ -55,6 +67,15 @@ class FriendController extends Controller
                 'code' => 1102,
                 'error' => [
                     'message' => 'invalid_friend_request'
+                ]
+            ]);
+        }
+        if ($friend->status !== 0){
+            return response()->json([
+                'success' => false,
+                'code' => 1102,
+                'error' => [
+                    'message' => 'already_accept'
                 ]
             ]);
         }
@@ -88,6 +109,15 @@ class FriendController extends Controller
                 ]
             ]);
         }
+        if ($friend->status !== 0){
+            return response()->json([
+                'success' => false,
+                'code' => 1102,
+                'error' => [
+                    'message' => 'already_delete_or_accept'
+                ]
+            ]);
+        }
         if ($friend->friend_id !== $user->id){
             return response()->json([
                 'success' => false,
@@ -97,7 +127,7 @@ class FriendController extends Controller
                 ]
             ]);
         }
-        $friend->status = 1;
+        $friend->status = 2;
         $result = $friend->save();
         if (!$result){
             return response()->json([
@@ -136,7 +166,7 @@ class FriendController extends Controller
                 ]
             ]);
         }
-        $friend->status = 1;
+        $friend->status = 3;
         $result = $friend->save();
         if (!$result){
             return response()->json([
@@ -154,15 +184,102 @@ class FriendController extends Controller
         ]);
     }
 
-    public function getFriendRequest(Request $request){
+    public function getSentRequest(Request $request){
+        $user = JWTAuth::parseToken()->toUser($request->bearerToken());
+        $friends = DB::table('friends')
+            ->leftJoin('users as friend','friend.id','=','friends.friend_id')
+            ->select('friends.*','friend.first_name as friend')
+            ->where('friends.user_id',$user->id)
+            ->where('status',0)
+            ->get();
+        if ($friends->count() == 0){
+            return response()->json([
+                'success' => false,
+                'code' => 1102,
+                'error' => [
+                    'message' => 'no_sent_request'
+                ]
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'code' => 1101,
+            'data' => $friends
+        ]);
+    }
 
+    public function getReceiveRequest(Request $request){
+        $user = JWTAuth::parseToken()->toUser($request->bearerToken());
+        $friends = DB::table('friends')
+            ->leftJoin('users as friend','friend.id','=','friends.user_id')
+            ->select('friends.*','friend.first_name as friend')
+            ->where('friends.friend_id',$user->id)
+            ->where('status',0)
+            ->get();
+
+        if ($friends->count() == 0){
+            return response()->json([
+                'success' => false,
+                'code' => 1102,
+                'error' => [
+                    'message' => 'no_receive_request'
+                ]
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'code' => 1101,
+            'data' => $friends
+        ]);
     }
 
     public function getFriendList(Request $request){
+        $user = JWTAuth::parseToken()->toUser($request->bearerToken());
+        $friends = DB::table('friends')
+            ->leftJoin('users as friend','friend.id','=','friends.friend_id')
+            ->select('friends.*','friend.first_name as friend')
+            ->where('friends.user_id',$user->id)
+            ->where('status',1)
+            ->get();
 
+        if ($friends->count() == 0){
+            return response()->json([
+                'success' => false,
+                'code' => 1102,
+                'error' => [
+                    'message' => 'no_friend'
+                ]
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'code' => 1101,
+            'data' => $friends
+        ]);
     }
 
     public function getBlockUsers(Request $request){
+        $user = JWTAuth::parseToken()->toUser($request->bearerToken());
+        $friends = DB::table('friends')
+            ->leftJoin('users as friend','friend.id','=','friends.friend_id')
+            ->select('friends.*','friend.first_name as friend')
+            ->where('friends.user_id',$user->id)
+            ->where('status',3)
+            ->get();
 
+        if ($friends->count() == 0){
+            return response()->json([
+                'success' => false,
+                'code' => 1102,
+                'error' => [
+                    'message' => 'no_friend'
+                ]
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'code' => 1101,
+            'data' => $friends
+        ]);
     }
 }

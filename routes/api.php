@@ -46,7 +46,8 @@ Route::middleware('JWTAuth')->group(function (){
     Route::PUT('friend/{id}/delete','FriendController@deleteRequest');
     Route::PUT('friend/{id}/block','FriendController@blockFriend');
 
-    Route::get('friend_request','FriendController@getFriendRequest');
+    Route::get('sent_request','FriendController@getSentRequest');
+    Route::get('receive_request','FriendController@getReceiveRequest');
     Route::get('friend','FriendController@getFriendList');
     Route::get('block_users','FriendController@getBlockUsers');
 
